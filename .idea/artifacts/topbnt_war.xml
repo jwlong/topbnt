@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="topbnt:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <root id="archive" name="topbnt.war">
+      <element id="artifact" artifact-name="topbnt:war exploded" />
+    </root>
+  </artifact>
+</component>
