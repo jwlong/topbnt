@@ -4,6 +4,7 @@ import com.topbnt.common.utils.CheckUtil;
 import com.topbnt.common.utils.Contants;
 import com.topbnt.common.utils.MessageUtil;
 import com.topbnt.mdl.Article;
+import com.topbnt.mdl.ImageMessage;
 import com.topbnt.mdl.NewsMessage;
 import com.topbnt.mdl.TextMessage;
 
@@ -139,5 +140,9 @@ public class WenXinServlet extends HttpServlet {
         newsMessage.setArticleCount(list.size());
         newsMessage.setArticles(list);
         return   MessageUtil.newsMessageToXML(newsMessage);
+    }
+    public String buildImageMessage(){
+        ImageMessage imageMessage = new ImageMessage();
+        return null;
     }
 }
