@@ -3,10 +3,7 @@ package com.topbnt.controller;
 import com.topbnt.common.utils.CheckUtil;
 import com.topbnt.common.utils.Contants;
 import com.topbnt.common.utils.MessageUtil;
-import com.topbnt.mdl.Article;
-import com.topbnt.mdl.ImageMessage;
-import com.topbnt.mdl.NewsMessage;
-import com.topbnt.mdl.TextMessage;
+import com.topbnt.menu.mdl.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -56,32 +53,21 @@ public class WenXinServlet extends HttpServlet {
             String mediaId = map.get("MediaId");
 
 
-            //text
-//            if(Contants.RESP_TEXT_TYPE.equals(msgType)){
-//                text.setContent("you send :"+content);
-//                System.out.println(message);
-//                message = MessageUtil.textMessageToXMl(text);
-//            }//picture
+            BaseMessage baseMessage = new BaseMessage();
+            baseMessage.setFromUserName(toUserName);
+            baseMessage.setToUserName(fromUserName);
+            baseMessage.setCreateTime(new Date().getTime());
+            baseMessage.setFuncFlag(0);
+            baseMessage.setMsgId(msgId);
              // 判断 1，2 ，3，4种情况
+            System.out.println("Type:"+msgType);
             if("1".equals(content)){
                 System.out.println("图片消息======>");
-                NewsMessage newsMessage = new NewsMessage();
-                newsMessage.setToUserName(fromUserName);
-                newsMessage.setFromUserName(toUserName);
-                newsMessage.setCreateTime(new Date().getTime());
-                newsMessage.setMsgId(msgId);
-                newsMessage.setMsgType(Contants.RESP_NEWS_TYPE);
-                //将向用户推送一条图文信息
-                Article article = new Article();
-                article.setDescription("这个是图文信息");
-                article.setPicUrl("http://www.iteye.com/upload/logo/user/603624/2dc5ec35-073c-35e7-9b88-274d6b39d560.jpg");
-                article.setTitle("图文消息1");
-                article.setUrl("www.topbnt.com");
-                List<Article> list = new ArrayList<Article>();
-                list.add(article);
-                newsMessage.setArticleCount(list.size());
-                newsMessage.setArticles(list);
-                message = MessageUtil.newsMessageToXML(newsMessage);
+                String description = "图片说明1";
+                String title = "图文标题";
+                picUrl = Contants.LOCAL_TEST_URL+"/images/200952912201250094246.jpg";
+                String url = "www.topbnt.com";
+                message = this.buildNewsMessage(baseMessage,description,picUrl,title,url);
                 //text.setPicUrl(picUrl);
                 //text.setMediaId(mediaId);
 
@@ -99,8 +85,26 @@ public class WenXinServlet extends HttpServlet {
                 text.setContent("地址："+label+"\n坐标 x:"+location_x+"\n y:"+location_y);
                 message = MessageUtil.textMessageToXMl(text);
             }else if(Contants.RESP_IMAGE_TYPE.equals(msgType)){
-                message = buildNewsMessage(fromUserName,toUserName,msgId,picUrl,mediaId);
-            } else{
+                System.out.println(picUrl);
+               // message = buildImageMessage(fromUserName,toUserName,msgId,picUrl,mediaId);
+                if(!"".equals(picUrl)){
+                    String description = "上面你发的图片，反弹回你，当然我也收下了";
+                    String title = "你发的图片";
+                    String url = Contants.LOCAL_TEST_URL+"/images/maimeng.jpg";
+                    message  = buildNewsMessage(baseMessage,description,picUrl,title,url);
+                }
+
+
+            } else if("1314".equals(content)){
+                // go to show love to
+                System.out.println("1314测试一下>");
+                String description = "七夕飞起!";
+                String title = "couple 来一双";
+                String jpg =".jpg";
+                picUrl = "http://90bab5e3.ngrok.io/images/1"+jpg;
+                String url = "www.topbnt.com/tpl/index.html";
+                message = this.buildNewsMessage(baseMessage,description,picUrl,title,url);
+            }else{
                 TextMessage text = new TextMessage();
                 text.setToUserName(fromUserName); //此时From User 与 To User的角色会对调
                 text.setFromUserName(toUserName);
@@ -122,27 +126,45 @@ public class WenXinServlet extends HttpServlet {
 
     }
 
-    public String buildNewsMessage(String fromUserName,String toUserName,String msgId,String picUrl,String mediaId){
+    public String buildImageMessage(String fromUserName,String toUserName,String msgId,String picUrl,String mediaId) {
+        ImageMessage imageMessage = new ImageMessage();
+        //picUrl = "http://90bab5e3.ngrok.io/images/1.jpg";
+        imageMessage.setToUserName(fromUserName);
+        imageMessage.setFromUserName(toUserName);
+        imageMessage.setCreateTime(new Date().getTime());
+        imageMessage.setMsgId(msgId);
+        imageMessage.setPicUrl(picUrl);
+        //imageMessage.setMediaId(mediaId);
+        imageMessage.setMsgType(Contants.RESP_IMAGE_TYPE);
+        return MessageUtil.imageMessageToXml(imageMessage);
+    }
+//    public String buildImageMessage(){
+//        ImageMessage imageMessage = new ImageMessage();
+//        imageMessage.setCreateTime();
+//
+//        return null;
+//    }
+
+    public String buildNewsMessage(BaseMessage baseMessage,String desc, String picUrl,String title,String url){
         NewsMessage newsMessage = new NewsMessage();
-        newsMessage.setToUserName(fromUserName);
-        newsMessage.setFromUserName(toUserName);
-        newsMessage.setCreateTime(new Date().getTime());
-        newsMessage.setMsgId(msgId);
+        newsMessage.setFromUserName(baseMessage.getFromUserName());
+        newsMessage.setToUserName(baseMessage.getToUserName());
+        newsMessage.setMsgId(baseMessage.getMsgId());
+        newsMessage.setCreateTime(baseMessage.getCreateTime());
+        newsMessage.setFuncFlag(baseMessage.getFuncFlag());
         newsMessage.setMsgType(Contants.RESP_NEWS_TYPE);
         //将向用户推送一条图文信息
         Article article = new Article();
-        article.setDescription("这个是图文信息");
+        article.setDescription(desc);
         article.setPicUrl(picUrl);
-        article.setTitle("图文消息"+mediaId);
-        article.setUrl("www.topbnt.com");
+        article.setTitle(title);
+        article.setUrl(url);
         List<Article> list = new ArrayList<Article>();
         list.add(article);
         newsMessage.setArticleCount(list.size());
         newsMessage.setArticles(list);
-        return   MessageUtil.newsMessageToXML(newsMessage);
+
+        return MessageUtil.newsMessageToXML(newsMessage);
     }
-    public String buildImageMessage(){
-        ImageMessage imageMessage = new ImageMessage();
-        return null;
-    }
+
 }

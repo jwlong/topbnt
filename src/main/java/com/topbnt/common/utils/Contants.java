@@ -13,4 +13,6 @@ public class Contants {
     public static final String RESP_LOCATION_TYPE = "location"; //地理位置
     public static final String RESP_LINK_TYPE = "link";//链接类型
     public static final String RESP_NEWS_TYPE = "news";
+    public static final String LOCAL_TEST_URL = "http://90bab5e3.ngrok.io";
+    public static final String SERVER_URL ="http://www.topbnt.com";
 }
