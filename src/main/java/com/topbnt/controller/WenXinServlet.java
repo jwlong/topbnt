@@ -3,7 +3,12 @@ package com.topbnt.controller;
 import com.topbnt.common.utils.CheckUtil;
 import com.topbnt.common.utils.Contants;
 import com.topbnt.common.utils.MessageUtil;
+import com.topbnt.common.utils.WenXinUtil;
+import com.topbnt.manager.impl.MenuManager;
 import com.topbnt.menu.mdl.*;
+import com.topbnt.message.mdl.AccessToken;
+import com.topbnt.message.mdl.Menu;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -30,6 +35,14 @@ public class WenXinServlet extends HttpServlet {
         String echostr = req.getParameter("echostr");
         PrintWriter out = resp.getWriter();
         if(CheckUtil.checkSignature(signature,timestamp,nonce)){
+//            AccessToken token = WenXinUtil.getAccessToken(Contants.APPID,Contants.APPSECRET);
+//            if(token != null){
+//                Menu menu = MenuManager.getMenu();
+//                int result =  WenXinUtil.createMenu(menu,token.getToken());
+//                if(result == 0){
+//                    log("菜单创成功!");
+//                }
+//            }
             out.print(echostr);
         }
     }
@@ -51,7 +64,7 @@ public class WenXinServlet extends HttpServlet {
             String msgId = map.get("MsgId");
             String picUrl = map.get("PicUrl");
             String mediaId = map.get("MediaId");
-
+            String eventType = map.get("Event");
 
             BaseMessage baseMessage = new BaseMessage();
             baseMessage.setFromUserName(toUserName);
@@ -61,7 +74,11 @@ public class WenXinServlet extends HttpServlet {
             baseMessage.setMsgId(msgId);
              // 判断 1，2 ，3，4种情况
             System.out.println("Type:"+msgType);
-            if("1".equals(content)){
+            if(StringUtils.isNotBlank(eventType)){
+                if("subscribe".equals(eventType)){
+                    message = getWelcomeInfo(baseMessage);
+                }
+            }else if("1".equals(content)){
                 System.out.println("图片消息======>");
                 String description = "图片说明1";
                 String title = "图文标题";
@@ -163,8 +180,18 @@ public class WenXinServlet extends HttpServlet {
         list.add(article);
         newsMessage.setArticleCount(list.size());
         newsMessage.setArticles(list);
-
         return MessageUtil.newsMessageToXML(newsMessage);
     }
-
+    public String getWelcomeInfo(BaseMessage baseMessage){
+        TextMessage textMessage = new TextMessage();
+        textMessage.setFromUserName(baseMessage.getFromUserName());
+        textMessage.setToUserName(baseMessage.getToUserName());
+        textMessage.setCreateTime(new Date().getTime());
+        textMessage.setFuncFlag(0);
+        textMessage.setMsgId(baseMessage.getMsgId());
+        textMessage.setMsgType(Contants.RESP_TEXT_TYPE);
+        textMessage.setContent("欢迎关注我的公众号，这个公众号是我展示自己的一个开始\n,无聊时，可以尝试回复文字，" +
+                "图片，地理位置\n,会有不同发现,公众号现正在折腾中，功能慢慢在完善\n,最后谢谢关注");
+        return MessageUtil.textMessageToXMl(textMessage);
+    }
 }
