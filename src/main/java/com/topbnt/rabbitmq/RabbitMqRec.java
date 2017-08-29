@@ -27,8 +27,7 @@ public class RabbitMqRec {
                     System.out.println("RabbitMqRec Received the message:" +message);
                 }
             };
-            //		自动回复队列应答 -- RabbitMQ中的消息确认机制，后面章节会详细讲解
-            //消息 自动应答
+            //		自动回复队列应答 -- RabbitMQ中的消息确认机制
             channel.basicConsume(QUEUE_NAME, true, consumer);
 
         } catch (IOException e) {

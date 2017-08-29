@@ -1,5 +1,6 @@
 package com.topbnt.controller;
 
+import com.sun.javafx.tk.Toolkit;
 import com.topbnt.common.utils.CheckUtil;
 import com.topbnt.common.utils.Contants;
 import com.topbnt.common.utils.MessageUtil;
@@ -8,23 +9,32 @@ import com.topbnt.manager.impl.MenuManager;
 import com.topbnt.menu.mdl.*;
 import com.topbnt.message.mdl.AccessToken;
 import com.topbnt.message.mdl.Menu;
+import com.topbnt.task.PrintHelloTask;
 import org.apache.commons.lang.StringUtils;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Administrator on 2017/8/13 0013.
  */
 public class WenXinServlet extends HttpServlet {
+    private long MINUTES_IN_MS = 1000*60;
+
+
+    @Override
+    public void init() throws ServletException {
+        //简单加一个定时任务,此类最好使用单例，只初始化一回
+        PrintHelloTask printHelloTask = PrintHelloTask.getInstance();
+        Timer timer = new Timer();
+        timer.schedule(printHelloTask,1000,MINUTES_IN_MS*Contants.printHelloInterval);
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

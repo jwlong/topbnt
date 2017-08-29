@@ -17,4 +17,5 @@ public class Contants {
     public static final String SERVER_URL ="http://www.topbnt.com";
     public static final String APPID = "wx976728514d46479b";
     public static final String APPSECRET = "d49c6d01a771c53c7b3bdf4402abda15";
+    public static final int printHelloInterval = 1; // 表示间隔一分钟
 }
