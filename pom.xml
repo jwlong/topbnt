@@ -8,6 +8,12 @@
   <name>topbnt Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
+    <!--rabbitmq 依赖-->
+      <dependency>
+          <groupId>com.rabbitmq</groupId>
+          <artifactId>amqp-client</artifactId>
+          <version>3.6.0</version>
+      </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
